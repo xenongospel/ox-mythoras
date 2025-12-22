@@ -1,217 +1,187 @@
-import { useState, useCallback, useEffect } from 'react';
-import { Panel } from '../types/panel';
-import { PANEL_CONFIGS } from '../config/panels';
-import { GRID_SIZE, HEADER_HEIGHT, SIDEBAR_WIDTH, MIN_PANEL_GAP, snapToGrid } from '../constants/layout';
+import { useCallback, useEffect } from 'react'
+
+import { PANEL_CONFIGS } from '../config/panels'
+import {
+  GRID_SIZE,
+  HEADER_HEIGHT,
+  MIN_PANEL_GAP,
+  SIDEBAR_WIDTH,
+} from '../constants/layout'
+import usePanelStore from '../stores/panelStore'
+import { Panel } from '../types/panel'
+import { normalizePanels } from '../utils/panels'
 
 export const usePanelManagement = (sidebarOpen: boolean) => {
   const getAvailableWidth = useCallback(() => {
-    return sidebarOpen ? window.innerWidth - SIDEBAR_WIDTH : window.innerWidth;
-  }, [sidebarOpen]);
+    return sidebarOpen ? window.innerWidth - SIDEBAR_WIDTH : window.innerWidth
+  }, [sidebarOpen])
 
   const getAvailableHeight = useCallback(() => {
-    return window.innerHeight - HEADER_HEIGHT;
-  }, []);
+    return window.innerHeight - HEADER_HEIGHT
+  }, [])
 
-  const hasCollision = useCallback((
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    existingPanels: Panel[],
-    excludeId?: string,
-  ): boolean => {
-    return existingPanels
-      .filter((panel) => panel.id !== excludeId)
-      .some((panel) => {
-        return !(
-          x >= panel.x + panel.width + MIN_PANEL_GAP ||
-          x + width <= panel.x - MIN_PANEL_GAP ||
-          y >= panel.y + panel.height + MIN_PANEL_GAP ||
-          y + height <= panel.y - MIN_PANEL_GAP
-        );
-      });
-  }, []);
+  const hasCollision = useCallback(
+    (
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      existingPanels: Panel[],
+      excludeId?: string
+    ): boolean => {
+      return existingPanels
+        .filter(panel => panel.id !== excludeId)
+        .some(panel => {
+          return !(
+            x >= panel.x + panel.width + MIN_PANEL_GAP ||
+            x + width <= panel.x - MIN_PANEL_GAP ||
+            y >= panel.y + panel.height + MIN_PANEL_GAP ||
+            y + height <= panel.y - MIN_PANEL_GAP
+          )
+        })
+    },
+    []
+  )
 
-  const getSimplePosition = useCallback((
-    panelType: string,
-    existingPanels: Panel[],
-  ): { x: number; y: number; width: number; height: number } => {
-    const config = PANEL_CONFIGS[panelType];
-    if (!config) {
-      return { x: 0, y: 0, width: 320, height: 200 };
-    }
-
-    const availableWidth = getAvailableWidth();
-    const availableHeight = getAvailableHeight();
-
-    const gameView = existingPanels.find((p) => p.type === "gameview");
-    if (gameView && panelType !== "gameview") {
-      const x = gameView.x + gameView.width + MIN_PANEL_GAP;
-      const y = gameView.y;
-
-      if (x + config.minWidth <= availableWidth) {
-        return {
-          x,
-          y,
-          width: config.minWidth,
-          height: config.minHeight,
-        };
+  const getSimplePosition = useCallback(
+    (
+      panelType: string,
+      existingPanels: Panel[]
+    ): { x: number; y: number; width: number; height: number } => {
+      const config = PANEL_CONFIGS[panelType]
+      if (!config) {
+        return { x: 0, y: 0, width: 320, height: 200 }
       }
-    }
 
-    for (let y = 0; y <= availableHeight - config.minHeight; y += GRID_SIZE) {
-      for (let x = 0; x <= availableWidth - config.minWidth; x += GRID_SIZE) {
-        if (!hasCollision(x, y, config.minWidth, config.minHeight, existingPanels)) {
-          return { x, y, width: config.minWidth, height: config.minHeight };
+      const availableWidth = getAvailableWidth()
+      const availableHeight = getAvailableHeight()
+
+      const gameView = existingPanels.find(p => p.type === 'gameview')
+      if (gameView && panelType !== 'gameview') {
+        const x = gameView.x + gameView.width + MIN_PANEL_GAP
+        const y = gameView.y
+
+        if (x + config.minWidth <= availableWidth) {
+          return {
+            x,
+            y,
+            width: config.minWidth,
+            height: config.minHeight,
+          }
         }
       }
-    }
 
-    return { x: 0, y: 0, width: config.minWidth, height: config.minHeight };
-  }, [getAvailableWidth, getAvailableHeight, hasCollision]);
+      for (let y = 0; y <= availableHeight - config.minHeight; y += GRID_SIZE) {
+        for (let x = 0; x <= availableWidth - config.minWidth; x += GRID_SIZE) {
+          if (
+            !hasCollision(
+              x,
+              y,
+              config.minWidth,
+              config.minHeight,
+              existingPanels
+            )
+          ) {
+            return { x, y, width: config.minWidth, height: config.minHeight }
+          }
+        }
+      }
 
-  // Initialize panels with default layout
-  const [panels, setPanels] = useState<Panel[]>(() => {
-    // Will be set properly after mount when window dimensions are available
-    return [];
-  });
+      return { x: 0, y: 0, width: config.minWidth, height: config.minHeight }
+    },
+    [getAvailableWidth, getAvailableHeight, hasCollision]
+  )
 
-  const addPanel = useCallback((type: string) => {
-    const config = PANEL_CONFIGS[type];
-    if (!config) return;
+  // Panels are backed by the Zustand store
+  const panels = usePanelStore(s => s.panels)
+  const panelList = normalizePanels(panels)
+  const setPanels = usePanelStore(s => s.setPanels)
+  const addPanelStore = usePanelStore(s => s.addPanel)
+  const removePanelStore = usePanelStore(s => s.removePanel)
+  const togglePanelLockStore = usePanelStore(s => s.togglePanelLock)
 
-    const position = getSimplePosition(type, panels);
-    const newPanel: Panel = {
-      id: Date.now().toString(),
-      type,
-      x: position.x,
-      y: position.y,
-      width: position.width,
-      height: position.height,
-      title: config.title,
-      locked: false,
-    };
-    setPanels((prev) => [...prev, newPanel]);
-  }, [panels, getSimplePosition]);
+  const addPanel = useCallback(
+    (type: string) => {
+      const config = PANEL_CONFIGS[type]
+      if (!config) return
 
-  const removePanel = useCallback((id: string) => {
-    setPanels((prev) => prev.filter((panel) => panel.id !== id));
-  }, []);
+      const position = getSimplePosition(type, panelList)
+      const newPanel: Panel = {
+        id: Date.now().toString(),
+        type,
+        x: position.x,
+        y: position.y,
+        width: position.width,
+        height: position.height,
+        title: config.title,
+        locked: false,
+      }
+      // persist to store
+      addPanelStore(newPanel)
+    },
+    [panels, getSimplePosition]
+  )
 
-  const togglePanelLock = useCallback((id: string) => {
-    setPanels((prev) =>
-      prev.map((panel) =>
-        panel.id === id ? { ...panel, locked: !panel.locked } : panel,
-      ),
-    );
-  }, []);
+  const removePanel = useCallback(
+    (id: string) => {
+      removePanelStore(id)
+    },
+    [removePanelStore]
+  )
+
+  const togglePanelLock = useCallback(
+    (id: string) => {
+      togglePanelLockStore(id)
+    },
+    [togglePanelLockStore]
+  )
 
   const createDefaultLayout = useCallback(() => {
-    const availableWidth = getAvailableWidth();
-    const availableHeight = getAvailableHeight();
-    
-    // Calculate dimensions for the layout
-    const gap = MIN_PANEL_GAP;
-    const topRowHeight = Math.floor(availableHeight * 0.6); // 60% for top row
-    const bottomRowHeight = availableHeight - topRowHeight - gap; // Remaining for bottom row
-    
-    // Top row: Game View (2/3) + World Map (1/3)
-    const gameViewWidth = Math.floor(availableWidth * 0.65);
-    const worldMapWidth = availableWidth - gameViewWidth - gap;
-    
-    // Bottom row: Inventory + Squad + Competitions (equal thirds)
-    const bottomPanelWidth = Math.floor((availableWidth - (2 * gap)) / 3);
-    
+    // For prototype v0.2 we intentionally start with only the primary Game View panel.
+    // This keeps the initial app focused and avoids instantiating archived panels on startup.
+    const availableWidth = getAvailableWidth()
+    const availableHeight = getAvailableHeight()
+
     const panels: Panel[] = [
-      // Game View - top left (primary panel)
       {
-        id: "main-game",
-        type: "gameview",
+        id: 'main-game',
+        type: 'gameview',
         x: 0,
         y: 0,
-        width: gameViewWidth,
-        height: topRowHeight,
-        title: "Game View",
+        width: availableWidth,
+        height: availableHeight,
+        title: 'Game View',
         locked: true,
       },
-      
-      // World Map - top right
-      {
-        id: "world-map-top",
-        type: "worldmap",
-        x: gameViewWidth + gap,
-        y: 0,
-        width: worldMapWidth,
-        height: topRowHeight,
-        title: "World Map",
-        locked: false,
-      },
-      
-      // Inventory - bottom left
-      {
-        id: "inventory-panel",
-        type: "inventory",
-        x: 0,
-        y: topRowHeight + gap,
-        width: bottomPanelWidth,
-        height: bottomRowHeight,
-        title: "Inventory",
-        locked: false,
-      },
-      
-      // Squad - bottom center
-      {
-        id: "squad-panel",
-        type: "squad",
-        x: bottomPanelWidth + gap,
-        y: topRowHeight + gap,
-        width: bottomPanelWidth,
-        height: bottomRowHeight,
-        title: "Squad",
-        locked: false,
-      },
-      
-      // Competitions - bottom right
-      {
-        id: "competitions-panel",
-        type: "competitions",
-        x: (bottomPanelWidth + gap) * 2,
-        y: topRowHeight + gap,
-        width: bottomPanelWidth,
-        height: bottomRowHeight,
-        title: "Competitions",
-        locked: false,
-      },
-    ];
-    
-    return panels;
-  }, [getAvailableWidth, getAvailableHeight]);
+    ]
+
+    return panels
+  }, [getAvailableWidth, getAvailableHeight])
 
   const resetLayout = useCallback(() => {
-    setPanels(createDefaultLayout());
-  }, [createDefaultLayout]);
+    setPanels(createDefaultLayout())
+  }, [createDefaultLayout])
 
   // Initialize default layout on mount and handle sidebar toggles
   useEffect(() => {
-    if (panels.length === 0) {
+    if (panelList.length === 0) {
       // Initialize with default layout on first mount
-      setPanels(createDefaultLayout());
+      setPanels(createDefaultLayout())
     } else {
       // Auto-reposition panels when sidebar toggles
-      setPanels((prev) => {
-        const availableWidth = getAvailableWidth();
-        return prev.map((panel) => {
-          if (!panel.locked && panel.x + panel.width > availableWidth) {
-            return {
-              ...panel,
-              x: Math.max(0, availableWidth - panel.width),
-            };
+      const availableWidth = getAvailableWidth()
+      const repositioned = panelList.map(panel => {
+        if (!panel.locked && panel.x + panel.width > availableWidth) {
+          return {
+            ...panel,
+            x: Math.max(0, availableWidth - panel.width),
           }
-          return panel;
-        });
-      });
+        }
+        return panel
+      })
+      setPanels(repositioned)
     }
-  }, [sidebarOpen, getAvailableWidth, createDefaultLayout, panels.length]);
+  }, [sidebarOpen, getAvailableWidth, createDefaultLayout, panels.length])
 
   return {
     panels,
@@ -223,5 +193,5 @@ export const usePanelManagement = (sidebarOpen: boolean) => {
     createDefaultLayout,
     getAvailableWidth,
     getAvailableHeight,
-  };
-};
+  }
+}

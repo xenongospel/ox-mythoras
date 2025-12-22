@@ -1,11 +1,3 @@
-Build a 3D Planet Explorer. Zoom and orbit through a mini solar system.
-- Use react-three-fiber for planets
-- Click planets for details
-- Include day/night shading
-Focus on stunning visuals and simple info.
-
-Style: Space-themed with star field background. Use realistic planet textures and subtle glow effects for celestial bodies.
-
 Use the following parameters:
 Build a 3D multiplayer cross-game of Pokemon and Path of Exile. 
 -> Player when first hitting website goes through a loader before a small animation to a start screen with the name Mythoras and a series of selections to make (New Game, Load Game and settings/options).

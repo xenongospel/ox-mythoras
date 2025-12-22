@@ -1,55 +1,57 @@
-import React from 'react';
+import React from 'react'
+
 import {
-  Save,
-  Upload,
-  RotateCcw,
+  Activity,
   Eye,
   EyeOff,
-  Layout,
-  Monitor,
-  Activity,
   Gamepad2,
+  Layout,
   Map,
-} from "lucide-react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+  RotateCcw,
+  Save,
+  Upload,
+} from 'lucide-react'
+
+import { PANEL_CONFIGS } from '../config/panels'
+import { Panel } from '../types/panel'
+import { normalizePanels } from '../utils/panels'
+import { Badge } from './ui/badge'
+import { Button } from './ui/button'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
-import { Badge } from "./ui/badge";
-import { Switch } from "./ui/switch";
-import { Separator } from "./ui/separator";
-import { Panel } from "../types/panel";
-import { PANEL_CONFIGS } from "../config/panels";
+} from './ui/dialog'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
+import { Separator } from './ui/separator'
+import { Switch } from './ui/switch'
 
 interface AppSidebarProps {
-  panels: Panel[];
-  savedLayouts: { [key: string]: Panel[] };
-  layoutName: string;
-  setLayoutName: (name: string) => void;
-  showSaveDialog: boolean;
-  setShowSaveDialog: (show: boolean) => void;
-  showLoadDialog: boolean;
-  setShowLoadDialog: (show: boolean) => void;
-  showHeaders: boolean;
-  setShowHeaders: (show: boolean) => void;
+  panels: Panel[]
+  savedLayouts: { [key: string]: Panel[] }
+  layoutName: string
+  setLayoutName: (name: string) => void
+  showSaveDialog: boolean
+  setShowSaveDialog: (show: boolean) => void
+  showLoadDialog: boolean
+  setShowLoadDialog: (show: boolean) => void
+  showHeaders: boolean
+  setShowHeaders: (show: boolean) => void
   // GameView UI toggles
-  showGameViewFPS: boolean;
-  setShowGameViewFPS: (show: boolean) => void;
-  showGameViewControls: boolean;
-  setShowGameViewControls: (show: boolean) => void;
-  showGameViewMinimap: boolean;
-  setShowGameViewMinimap: (show: boolean) => void;
-  onSaveLayout: () => void;
-  onLoadLayout: (name: string) => void;
-  onResetLayout: () => void;
-  onCreateDefaultLayout: () => void;
-  onAddPanel: (type: string) => void;
+  showGameViewFPS: boolean
+  setShowGameViewFPS: (show: boolean) => void
+  showGameViewControls: boolean
+  setShowGameViewControls: (show: boolean) => void
+  showGameViewMinimap: boolean
+  setShowGameViewMinimap: (show: boolean) => void
+  onSaveLayout: () => void
+  onLoadLayout: (name: string) => void
+  onResetLayout: () => void
+  onCreateDefaultLayout: () => void
+  onAddPanel: (type: string) => void
 }
 
 export const AppSidebar: React.FC<AppSidebarProps> = ({
@@ -75,21 +77,20 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
   onCreateDefaultLayout,
   onAddPanel,
 }) => {
+  const panelList = normalizePanels(panels)
+
   return (
     <div className="p-4 space-y-4">
       {/* Layout Controls */}
       <div>
         <h3
           className="text-base text-violet-500 mb-3 tracking-wider"
-          style={{ fontFamily: "Cinzel, serif" }}
+          style={{ fontFamily: 'Cinzel, serif' }}
         >
           Layout Management
         </h3>
         <div className="space-y-2">
-          <Dialog
-            open={showSaveDialog}
-            onOpenChange={setShowSaveDialog}
-          >
+          <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
             <DialogTrigger asChild>
               <Button
                 variant="outline"
@@ -104,7 +105,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
               <DialogHeader>
                 <DialogTitle
                   className="text-violet-500"
-                  style={{ fontFamily: "Cinzel, serif" }}
+                  style={{ fontFamily: 'Cinzel, serif' }}
                 >
                   Save Layout
                 </DialogTitle>
@@ -120,7 +121,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
                   <Input
                     id="layout-name"
                     value={layoutName}
-                    onChange={(e) => setLayoutName(e.target.value)}
+                    onChange={e => setLayoutName(e.target.value)}
                     className="bg-surface-1 border-border text-text-1 mt-1 h-10 tracking-wide"
                     placeholder="Enter layout name..."
                   />
@@ -135,10 +136,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
             </DialogContent>
           </Dialog>
 
-          <Dialog
-            open={showLoadDialog}
-            onOpenChange={setShowLoadDialog}
-          >
+          <Dialog open={showLoadDialog} onOpenChange={setShowLoadDialog}>
             <DialogTrigger asChild>
               <Button
                 variant="outline"
@@ -153,13 +151,13 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
               <DialogHeader>
                 <DialogTitle
                   className="text-violet-500"
-                  style={{ fontFamily: "Cinzel, serif" }}
+                  style={{ fontFamily: 'Cinzel, serif' }}
                 >
                   Load Layout
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-2">
-                {Object.keys(savedLayouts).map((name) => (
+                {Object.keys(savedLayouts).map(name => (
                   <Button
                     key={name}
                     variant="outline"
@@ -206,7 +204,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
       <div>
         <h3
           className="text-base text-violet-500 mb-3 tracking-wider"
-          style={{ fontFamily: "Cinzel, serif" }}
+          style={{ fontFamily: 'Cinzel, serif' }}
         >
           View Options
         </h3>
@@ -222,10 +220,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
                 Panel Headers
               </span>
             </div>
-            <Switch
-              checked={showHeaders}
-              onCheckedChange={setShowHeaders}
-            />
+            <Switch checked={showHeaders} onCheckedChange={setShowHeaders} />
           </div>
         </div>
       </div>
@@ -233,12 +228,12 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
       <Separator className="bg-border" />
 
       {/* GameView Controls */}
-      {panels.some(p => p.type === 'gameview') && (
+      {panelList.some(p => p.type === 'gameview') && (
         <>
           <div>
             <h3
               className="text-base text-violet-500 mb-3 tracking-wider"
-              style={{ fontFamily: "Cinzel, serif" }}
+              style={{ fontFamily: 'Cinzel, serif' }}
             >
               Game View Settings
             </h3>
@@ -255,7 +250,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
                   onCheckedChange={setShowGameViewFPS}
                 />
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Gamepad2 className="w-4 h-4" />
@@ -268,7 +263,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
                   onCheckedChange={setShowGameViewControls}
                 />
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Map className="w-4 h-4" />
@@ -292,14 +287,14 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
       <div>
         <h3
           className="text-base text-violet-500 mb-3 tracking-wider"
-          style={{ fontFamily: "Cinzel, serif" }}
+          style={{ fontFamily: 'Cinzel, serif' }}
         >
           Add Panels
         </h3>
         <div className="grid grid-cols-1 gap-2">
           {Object.entries(PANEL_CONFIGS).map(([type, config]) => {
-            const Icon = config.icon;
-            const exists = panels.some((p) => p.type === type);
+            const Icon = config.icon
+            const exists = panelList.some(p => p.type === type)
 
             return (
               <Button
@@ -321,7 +316,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
                   </Badge>
                 )}
               </Button>
-            );
+            )
           })}
         </div>
       </div>
@@ -332,14 +327,16 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
       <div>
         <h3
           className="text-base text-violet-500 mb-3 tracking-wider"
-          style={{ fontFamily: "Cinzel, serif" }}
+          style={{ fontFamily: 'Cinzel, serif' }}
         >
           System Status
         </h3>
         <div className="space-y-2 text-sm mono">
           <div className="flex justify-between text-text-2">
             <span className="tracking-wide">Panels Active:</span>
-            <span className="text-teal-500 tracking-wide">{panels.length}</span>
+            <span className="text-teal-500 tracking-wide">
+              {panelList.length}
+            </span>
           </div>
           <div className="flex justify-between text-text-2">
             <span className="tracking-wide">Layouts Saved:</span>
@@ -350,5 +347,5 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

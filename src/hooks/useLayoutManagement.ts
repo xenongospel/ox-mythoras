@@ -42,27 +42,18 @@ export const useLayoutManagement = () => {
   }, [savedLayouts]);
 
   const resetLayout = useCallback((): Panel[] => {
+    // Prototype default: only the main Game View panel
     return [
       { 
         id: 'main-game', 
         type: 'gameview', 
-        x: 20, 
-        y: HEADER_HEIGHT + 20, 
-        width: 800, 
-        height: 450, 
+        x: 0,
+        y: HEADER_HEIGHT,
+        width: 1280,
+        height: 720,
         title: 'Game View',
-        locked: true
+        locked: true,
       },
-      { 
-        id: 'squad-ribbon', 
-        type: 'squad', 
-        x: 20, 
-        y: HEADER_HEIGHT + 490, 
-        width: 600, 
-        height: 120, 
-        title: 'Squad',
-        locked: true
-      }
     ];
   }, []);
 

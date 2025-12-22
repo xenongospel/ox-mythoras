@@ -9,14 +9,31 @@ import {
   Trophy,
   Inbox,
 } from "lucide-react";
-import { ChatPanel } from "../components/ChatPanel";
+import { ChatPanel } from "../components/archived_panels_v0/ChatPanel";
 import { SimpleGameViewPanel } from "../components/SimpleGameViewPanel";
-import { SimpleSquadPanel } from "../components/SimpleSquadPanel";
-import { InventoryPanel } from "../components/InventoryPanel";
-import { WorldMapPanel } from "../components/WorldMapPanel";
-import { CompetitionsPanel } from "../components/CompetitionsPanel";
+import { SimpleSquadPanel } from "../components/archived_panels_v0/SimpleSquadPanel";
+import { InventoryPanel } from "../components/archived_panels_v0/InventoryPanel";
+import { WorldMapPanel } from "../components/archived_panels_v0/WorldMapPanel";
+import { CompetitionsPanel } from "../components/archived_panels_v0/CompetitionsPanel";
 import { BasicPlaceholder } from "../components/BasicPlaceholder";
 import { PanelConfig } from "../types/panel";
+
+// Create consistent React components for all panels
+const PassiveTreePanel = (props: any) => (
+  <BasicPlaceholder title="Passive Tree" icon={GitBranch} {...props} />
+);
+
+const CreaturesPanel = (props: any) => (
+  <BasicPlaceholder title="Creatures" icon={Users} {...props} />
+);
+
+const ScoutingPanel = (props: any) => (
+  <BasicPlaceholder title="Scouting" icon={Search} {...props} />
+);
+
+const InboxPanel = (props: any) => (
+  <BasicPlaceholder title="Inbox" icon={Inbox} {...props} />
+);
 
 export const PANEL_COMPONENTS: Record<string, React.ComponentType<any>> = {
   gameview: SimpleGameViewPanel,
@@ -24,17 +41,11 @@ export const PANEL_COMPONENTS: Record<string, React.ComponentType<any>> = {
   squad: SimpleSquadPanel,
   inventory: InventoryPanel,
   worldmap: WorldMapPanel,
-  passivetree: () => (
-    <BasicPlaceholder title="Passive Tree" icon={GitBranch} />
-  ),
-  creatures: () => (
-    <BasicPlaceholder title="Creatures" icon={Users} />
-  ),
-  scouting: () => (
-    <BasicPlaceholder title="Scouting" icon={Search} />
-  ),
+  passivetree: PassiveTreePanel,
+  creatures: CreaturesPanel,
+  scouting: ScoutingPanel,
   competitions: CompetitionsPanel,
-  inbox: () => <BasicPlaceholder title="Inbox" icon={Inbox} />,
+  inbox: InboxPanel,
 };
 
 export const PANEL_CONFIGS: Record<string, PanelConfig> = {

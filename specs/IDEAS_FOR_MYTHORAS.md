@@ -623,7 +623,7 @@ Buffs and Debuffs
 -> Static -> applies a weaker shock damage debuff but potential chance to paralyze target.
 -> Resonant Shock (M.Y.T.H) -> applies debuff that slows user's priority next turn and doubles shock threshold penetration.
 
-Arsenal 
+Arsenal (Grenadier)
 -> Bomb like cast on crit meta gem
 --> Meta jewels allow for interesting delivery mechanisms (should create for spells and attacks
 

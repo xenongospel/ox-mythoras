@@ -38,6 +38,10 @@
     "@radix-ui/react-tooltip": "*",
     "@react-three/drei": "*",
     "@react-three/fiber": "*",
+    "@tailwindcss/vite": "^4.1.13",
+    "@tanstack/react-query": "^5.90.12",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-opener": "^2",
     "class-variance-authority": "^0.7.1",
     "clsx": "*",
     "cmdk": "^1.1.1",
@@ -49,15 +53,17 @@
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.55.0",
     "react-resizable-panels": "^2.1.7",
-    "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-opener": "^2"
+    "tailwindcss": "^4.1.13",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
+    "@vitejs/plugin-react-swc": "^4.0.1",
+    "tailwind-merge": "^3.3.1",
     "typescript": "~5.8.3",
-    "vite": "^7.0.4",
-    "@tauri-apps/cli": "^2"
+    "vite": "^7.0.4"
   }
 }
