@@ -1,4 +1,5 @@
 import React from 'react'
+import useSimulationStore from '../stores/simulationStore'
 
 interface PlayerHUDProps {
   showFPS?: boolean
@@ -7,10 +8,11 @@ interface PlayerHUDProps {
 }
 
 export const PlayerHUD: React.FC<PlayerHUDProps> = ({ showFPS = true, showControls = true, showMinimap = true }) => {
-  // Placeholder data for prototype; real data should come from SimulationEngine / stores
-  const fps = 60
-  const playTime = 123
-  const pos = [0.0, 0.0]
+  // Read authoritative HUD state from simulationStore
+  const fps = useSimulationStore(state => state.fps)
+  const playTime = useSimulationStore(state => state.playTime)
+  const posObj = useSimulationStore(state => state.position)
+  const pos = [posObj.x, posObj.z]
 
   return (
     <>

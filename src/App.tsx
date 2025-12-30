@@ -2,33 +2,40 @@ import { useEffect, useState } from 'react'
 
 import { QueryClientProvider } from '@tanstack/react-query'
 
-import DevToolkit from './components/DevToolkit'
 import PanelRenderer from './components/PanelRenderer'
-import PlayerHUD from './components/PlayerHUD'
 import { Shell } from './components/Shell'
+import StatusFooter from './components/StatusFooter'
 import { HEADER_HEIGHT, SIDEBAR_WIDTH } from './constants/layout'
+import useBreakpoint from './hooks/useBreakpoint'
 import { useDragAndResize } from './hooks/useDragAndResize'
 import { usePanelManagement } from './hooks/usePanelManagement'
 import queryClient from './stores/queryClient'
+import useUIStore from './stores/uiStore'
 
 export default function App() {
   // Basic state
   const [searchQuery, setSearchQuery] = useState('')
   const [currentDate] = useState(new Date(2024, 7, 1))
-  const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [showHeaders, setShowHeaders] = useState(true)
+  const sidebarOpen = useUIStore(s => s.sidebarOpen)
+  const setSidebarOpen = useUIStore(s => s.setSidebarOpen)
+  const showHeaders = useUIStore(s => s.showHeaders)
+  const setShowHeaders = useUIStore(s => s.setShowHeaders)
   const [showCalendar, setShowCalendar] = useState(false)
 
   // GameView UI toggles
-  const [showGameViewFPS, setShowGameViewFPS] = useState(true)
-  const [showGameViewControls, setShowGameViewControls] = useState(true)
-  const [showGameViewMinimap, setShowGameViewMinimap] = useState(true)
+  const showGameViewFPS = useUIStore(s => s.showGameViewFPS)
+  const setShowGameViewFPS = useUIStore(s => s.setShowGameViewFPS)
+  const showGameViewControls = useUIStore(s => s.showGameViewControls)
+  const setShowGameViewControls = useUIStore(s => s.setShowGameViewControls)
+  const showGameViewMinimap = useUIStore(s => s.showGameViewMinimap)
+  const setShowGameViewMinimap = useUIStore(s => s.setShowGameViewMinimap)
 
   // Game simulation state - fresh start
   const [isSimulating, setIsSimulating] = useState(false)
-  const [currentRegion] = useState('Valdris Reach')
-  const [playerLevel] = useState(1)
-  const [campaignDay] = useState(1)
+  const currentRegion = useUIStore(s => s.currentLocation)
+  const playerLevel = useUIStore(s => s.playerLevel)
+  const playerName = useUIStore(s => s.playerName)
+  const currentAct = useUIStore(s => s.currentAct)
 
   // Panel management
   const {
@@ -92,7 +99,10 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="w-full h-screen bg-bg-canvas text-text-1 overflow-hidden flex flex-col">
+      <div
+        className="w-full h-screen bg-bg-canvas text-text-1 overflow-hidden flex flex-col"
+        data-breakpoint={useBreakpoint()}
+      >
         <Shell
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -107,10 +117,9 @@ export default function App() {
           setShowGameViewControls={setShowGameViewControls}
           showGameViewMinimap={showGameViewMinimap}
           setShowGameViewMinimap={setShowGameViewMinimap}
-          isSimulating={isSimulating}
-          toggleSimulation={toggleSimulation}
           currentRegion={currentRegion}
-          campaignDay={campaignDay}
+          currentAct={currentAct}
+          playerName={playerName}
           playerLevel={playerLevel}
         />
 
@@ -136,41 +145,16 @@ export default function App() {
               showGameViewControls={showGameViewControls}
               showGameViewMinimap={showGameViewMinimap}
             />
-            {/* Player HUD overlays */}
-            <PlayerHUD
-              showFPS={showGameViewFPS}
-              showControls={showGameViewControls}
-              showMinimap={showGameViewMinimap}
-            />
+            {/* Player HUD is rendered inside the Game View panel to ensure it is clipped and positioned relative to the panel. */}
           </div>
 
           {/* Right Sidebar */}
-          <DevToolkit
-            panels={panels}
-            savedLayouts={savedLayouts}
-            layoutName={layoutName}
-            setLayoutName={setLayoutName}
-            showSaveDialog={showSaveDialog}
-            setShowSaveDialog={setShowSaveDialog}
-            showLoadDialog={showLoadDialog}
-            setShowLoadDialog={setShowLoadDialog}
-            showHeaders={showHeaders}
-            setShowHeaders={setShowHeaders}
-            showGameViewFPS={showGameViewFPS}
-            setShowGameViewFPS={setShowGameViewFPS}
-            showGameViewControls={showGameViewControls}
-            setShowGameViewControls={setShowGameViewControls}
-            showGameViewMinimap={showGameViewMinimap}
-            setShowGameViewMinimap={setShowGameViewMinimap}
-            onSaveLayout={saveLayout}
-            onLoadLayout={loadLayout}
-            onResetLayout={resetLayout}
-            onCreateDefaultLayout={() => setPanels(createDefaultLayout())}
-            onAddPanel={addPanel}
-            sidebarOpen={sidebarOpen}
-            setSidebarOpen={setSidebarOpen}
-          />
+          {/*
+            DevToolkit temporarily disabled in main window per Phase A.
+            Developer tools will be moved to a separate Tauri window (devtools).
+          */}
         </div>
+        <StatusFooter />
       </div>
     </QueryClientProvider>
   )

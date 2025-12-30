@@ -26,3 +26,4 @@ Acceptance Criteria
 4. Game View header minimized by default or Game View integrated into shell per final decision.
 
 
+

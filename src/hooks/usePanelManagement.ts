@@ -13,11 +13,15 @@ import { normalizePanels } from '../utils/panels'
 
 export const usePanelManagement = (sidebarOpen: boolean) => {
   const getAvailableWidth = useCallback(() => {
-    return sidebarOpen ? window.innerWidth - SIDEBAR_WIDTH : window.innerWidth
+    const raw = sidebarOpen
+      ? window.innerWidth - SIDEBAR_WIDTH
+      : window.innerWidth
+    return Math.max(raw, 100)
   }, [sidebarOpen])
 
   const getAvailableHeight = useCallback(() => {
-    return window.innerHeight - HEADER_HEIGHT
+    const raw = window.innerHeight - HEADER_HEIGHT
+    return Math.max(raw, 100)
   }, [])
 
   const hasCollision = useCallback(
@@ -181,7 +185,38 @@ export const usePanelManagement = (sidebarOpen: boolean) => {
       })
       setPanels(repositioned)
     }
-  }, [sidebarOpen, getAvailableWidth, createDefaultLayout, panels.length])
+  }, [
+    sidebarOpen,
+    getAvailableWidth,
+    createDefaultLayout,
+    panelList.length,
+    setPanels,
+  ])
+
+  // Update main-game panel size on window resize so GameView fills the available area.
+  useEffect(() => {
+    let timeout: any = null
+    const onResize = () => {
+      if (timeout) clearTimeout(timeout)
+      timeout = setTimeout(() => {
+        const availableWidth = getAvailableWidth()
+        const availableHeight = getAvailableHeight()
+        const updated = panelList.map(p => {
+          if (p.type === 'gameview') {
+            return { ...p, width: availableWidth, height: availableHeight }
+          }
+          return p
+        })
+        setPanels(updated)
+      }, 100)
+    }
+
+    window.addEventListener('resize', onResize)
+    return () => {
+      window.removeEventListener('resize', onResize)
+      if (timeout) clearTimeout(timeout)
+    }
+  }, [getAvailableWidth, getAvailableHeight, panelList, setPanels])
 
   return {
     panels,

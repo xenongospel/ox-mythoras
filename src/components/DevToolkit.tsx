@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { AppSidebar } from './AppSidebar'
+import useBreakpoint from '../hooks/useBreakpoint'
 
 interface DevToolkitProps {
   panels: any[]
@@ -54,6 +55,8 @@ export const DevToolkit: React.FC<DevToolkitProps> = ({
 }) => {
   // Only enable toolkit in dev builds
   const isDev = typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env.DEV
+  // hide DevToolkit on small/medium breakpoints to avoid cluttering prototype UI
+  const bp = useBreakpoint()
 
   useEffect(() => {
     if (!isDev) return
@@ -71,6 +74,7 @@ export const DevToolkit: React.FC<DevToolkitProps> = ({
   }, [isDev, sidebarOpen, setSidebarOpen])
 
   if (!isDev) return null
+  if (bp === 'md' || bp === 'sm') return null
 
   return (
     <div

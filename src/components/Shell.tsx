@@ -1,26 +1,20 @@
 import React from 'react'
+
 import {
   Calendar,
   ChevronLeft,
   ChevronRight,
   Clock,
-  Pause,
-  Play,
   Search,
   Settings,
   Shield,
 } from 'lucide-react'
 
-import { Button } from './ui/button'
-import { Input } from './ui/input'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from './ui/popover'
-import { CampaignCalendar } from './CampaignCalendar'
-import { formatDate, formatTime } from '../utils/formatting'
 import { HEADER_HEIGHT } from '../constants/layout'
+import { formatDate, formatTime } from '../utils/formatting'
+import { CampaignCalendar } from './CampaignCalendar'
+import { Input } from './ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 
 export interface ShellProps {
   searchQuery: string
@@ -36,10 +30,9 @@ export interface ShellProps {
   setShowGameViewControls: (b: boolean) => void
   showGameViewMinimap: boolean
   setShowGameViewMinimap: (b: boolean) => void
-  isSimulating: boolean
-  toggleSimulation: () => void
   currentRegion: string
-  campaignDay: number
+  currentAct: string
+  playerName: string
   playerLevel: number
 }
 
@@ -57,10 +50,9 @@ export const Shell: React.FC<ShellProps> = ({
   setShowGameViewControls,
   showGameViewMinimap,
   setShowGameViewMinimap,
-  isSimulating,
-  toggleSimulation,
   currentRegion,
-  campaignDay,
+  currentAct,
+  playerName,
   playerLevel,
 }) => {
   return (
@@ -88,10 +80,11 @@ export const Shell: React.FC<ShellProps> = ({
               className="text-xl text-text-1 tracking-wider"
               style={{ fontFamily: 'Cinzel, serif', fontWeight: 600 }}
             >
-              Mythoras Campaign
+              Campaign
             </h1>
             <div className="text-sm text-text-3 mono tracking-wide">
-              {currentRegion} • Day {campaignDay} • Level {playerLevel}
+              {currentRegion} • {currentAct} • {playerName} • Level{' '}
+              {playerLevel}
             </div>
           </div>
         </div>
@@ -142,37 +135,27 @@ export const Shell: React.FC<ShellProps> = ({
           </PopoverContent>
         </Popover>
 
-        {/* Simulation Controls */}
-        <div className="flex items-center gap-3 bg-surface-1 px-4 py-2 border border-border">
-          <button
-            onClick={toggleSimulation}
-            className="w-10 h-10 flex items-center justify-center text-teal-500 hover:bg-surface-0 hover-transition"
-          >
-            {isSimulating ? (
-              <Pause className="w-5 h-5" />
-            ) : (
-              <Play className="w-5 h-5" />
-            )}
-          </button>
-          <span className="text-sm text-text-2 tracking-wide">
-            {isSimulating ? 'Simulation Running' : 'Simulation Paused'}
-          </span>
-        </div>
-
-        {/* Panel Controls */}
-        <Button
-          variant="ghost"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="text-teal-500 hover:bg-surface-1 px-3 py-2 h-10 text-sm tracking-wide"
+        {/* Panel Controls: icon-only small button toggles devtools window */}
+        <button
+          onClick={async () => {
+            try {
+              const mod = await import('../utils/devtools')
+              const fn = mod.openDevtoolsWindow ?? mod.default
+              if (fn) await fn()
+            } catch (err) {
+              console.warn('Failed to open devtools', err)
+            }
+          }}
+          className="w-8 h-8 flex items-center justify-center text-teal-500 hover:bg-surface-1 rounded"
+          style={{ zIndex: 9999 }}
+          aria-label="Devtools"
+          title="Devtools"
         >
-          <Settings className="w-4 h-4 mr-2" />
-          Panels
-        </Button>
+          <Settings className="w-4 h-4" />
+        </button>
       </div>
     </div>
   )
 }
 
 export default Shell
-
-

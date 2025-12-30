@@ -60,3 +60,4 @@ export function createPersistenceAdapter(): PersistenceAdapter {
 export default createPersistenceAdapter
 
 
+

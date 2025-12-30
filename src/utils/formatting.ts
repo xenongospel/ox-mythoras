@@ -13,3 +13,19 @@ export const formatTime = (date: Date) => {
     hour12: false,
   });
 };
+
+export const formatRevision = (date: Date) => {
+  const month = date.getMonth() + 1
+  let season = 'Midyear'
+  if (month === 12 || month <= 2) season = 'Winterfall'
+  else if (month >= 3 && month <= 5) season = 'Greenspring'
+  else if (month >= 6 && month <= 8) season = 'Highsun'
+  else if (month >= 9 && month <= 11) season = 'Duskhave'
+  return `Rev ${date.getFullYear()} - ${season}`
+}
+
+export const formatPatch = (date: Date) => {
+  const hh = date.getHours().toString().padStart(2, '0')
+  const mm = date.getMinutes().toString().padStart(2, '0')
+  return `Patch ${hh}:${mm}`
+}

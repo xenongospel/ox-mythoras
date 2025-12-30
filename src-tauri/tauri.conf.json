@@ -12,9 +12,21 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "ox-mythoras",
         "width": 1280,
-        "height": 720
+        "height": 720,
+        "minWidth": 1280,
+        "minHeight": 720
+      }
+    ,
+      {
+        "label": "devtools",
+        "title": "ox-mythoras-devtools",
+        "width": 480,
+        "height": 720,
+        "resizable": true,
+        "visible": false
       }
     ],
     "security": {
