@@ -1,5 +1,5 @@
 Use the following parameters:
-Build a 3D multiplayer cross-game of Pokemon and Path of Exile. 
+Build a multiplayer game inspired by Pokemon and Path of Exile in the theme of an aRPG limited grid based turn by turn battle with Yu-Gi-Oh mechanics slightly taken like interventions on the opponents turn to create a greater dynamic battle structure than Pokemon's.
 -> Player when first hitting website goes through a loader before a small animation to a start screen with the name Mythoras and a series of selections to make (New Game, Load Game and settings/options).
 -> Players will create a game account where similar to Path of Exile it can be used to interact with any external provider that wants to create third party tools that wants to also gain player information in a secure way like having a query search for people's inventory.
 -> Players will create a new character within a specific league (with a selection screen showing the leagues that they can choose from)
@@ -17,4 +17,4 @@ Use the following parameters:
 -> The Player's character is largely not configurable but the creatures are. The Creatures have a set of stats governed inspired by Path of Exile by 5 primary attributes; Authority (red/purple colour scheme), Order (Royal Blue/Yellow), Invictus (Green Yellow) and Animus (Purple/Yellow)
 -> Set of underlying characteristics
 
-Style: Action RPG like game 
+Style: Action RPG game + Creature Collecting (Monster Taming) + Chess like limited grid based battle system (turn by turn) drawing on mechanics from PoE and Pokemon like a unique type system, skill cards (skill gems in PoE) but with a whole new spin on creature collecting and progression with a shared team based motherboard passive tree like you would see in Final Fantasy X. Does that make sense?
